@@ -6,5 +6,9 @@ app = Flask(__name__)
 def display_table():
     return render_template('table.html')
 
+@app.route('/platforms')
+def platforms():
+    return render_template('platforms.html')
+
 if __name__ == '__main__':
     app.run(debug=True)

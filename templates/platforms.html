@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en" data-bs-theme="dark">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Follow Manager</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  </head>
+  <body>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container">
+            <a class="navbar-brand" href="#">Follow Manager</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="#">Home</a>
+                </li>
+            </ul>
+            </div>
+        </div>
+    </nav>
+
+    <br>
+
+    <div class="container">
+
+    <div class="list-group">
+    <div id="alertDiv"></div>
+    </div>
+    <script>
+
+
+    const alertDiv = document.getElementById('alertDiv')
+
+    const alert = (message, type) => {
+        const wrapper = document.createElement('div')
+        wrapper.innerHTML = [
+            `<div class="alert alert-${type} alert-dismissible" role="alert">`,
+            `   <div>${message}</div>`,
+            '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+            '</div>'
+        ].join('')
+
+        alertDiv.append(wrapper)
+    }
+
+    const createList = (id, message) => {
+        const wrapper = document.createElement('div')
+        wrapper.innerHTML = [
+            `   <a  class="list-group-item d-flex justify-content-between align-items-center">${message}    <button class="btn btn-danger" type="submit" id=${id}>Delete</button>
+</a>`
+        ].join('')
+
+        alertDiv.append(wrapper)
+    }
+
+
+
+
+        fetch('http://127.0.0.1:5001/platforms', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+        console.log(response)
+            if (!response.ok) {
+                return response.json().then(errorData => {
+                    throw new Error(errorData.error);
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            for(ff of data.data){
+                createList(`${ff[0]}`,`${ff[1]}`);
+            }
+        })
+        .catch(error => {
+            alert(`Error sdvsdv platform: ${error.message}`, 'danger');
+        });
+
+    </script>
+
+
+
+
+
+    </div>
+</body>
+</html>

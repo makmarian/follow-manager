@@ -1,7 +1,11 @@
 from flask import Flask
 import sqlite3
+from flask import request
+from flask_cors import CORS, cross_origin
+from flask import jsonify
 
 app = Flask(__name__)
+CORS(app)
 
 conn = sqlite3.connect('dev.db')
 cursor = conn.cursor()
@@ -46,6 +50,48 @@ def display_table():
     ]
 
     return table_data
+
+@app.route('/platforms', methods = ['POST','GET'])
+def platforms():
+    if request.method == 'POST':
+        if not request.data:
+            return jsonify({'error': f'no-data-present'}), 400
+
+        name = request.json.get('name')
+
+        if name is None:
+            return jsonify({'error': f'no-name-present'}), 400
+
+        conn = sqlite3.connect('dev.db')
+        cursor = conn.cursor()
+
+        # Check if platform already exists
+        cursor.execute('''SELECT * FROM platforms WHERE platform_name = ?''', (name,))
+
+        if cursor.fetchone():
+            return jsonify({'error': f'already-exists'}), 409
+
+        # Add the platform to the database
+        cursor.execute('''INSERT INTO platforms (platform_name) VALUES (?)''', (name,))
+        conn.commit()
+
+        # Make a check to see that it is actually added
+        if cursor.rowcount > 0:
+            return jsonify({'success': f'added-platform-{name}'}), 200
+        else:
+            return jsonify({'error': f'somethign-went-wrong-adding-platform'}), 400
+
+    if request.method == 'GET':
+        conn = sqlite3.connect('dev.db')
+        cursor = conn.cursor()
+
+        data_list = []
+        cursor.execute('''SELECT * FROM platforms''')
+        for a in cursor:
+            data_list.append(a)
+
+        return jsonify({'data':data_list}), 200
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
