@@ -92,6 +92,24 @@ def platforms():
 
         return jsonify({'data':data_list}), 200
 
+@app.route('/platform/id/<platform_id>', methods=['GET','DELETE'])
+def platform_id(platform_id):
+    if request.method == 'DELETE':
+        conn = sqlite3.connect('dev.db')
+        cursor = conn.cursor()
+
+        cursor.execute('''SELECT * FROM platforms WHERE platform_id = ?''', (platform_id,))
+
+        if not cursor.fetchone():
+            return jsonify({'error': f'does-not-exist'}), 400
+        print(cursor.rowcount)
+        cursor.execute('''DELETE FROM platforms WHERE platform_id = ?''', (platform_id,))
+
+        conn.commit()
+        print(cursor.rowcount)
+        return jsonify({'ff': 'fefe'}), 200
+
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
