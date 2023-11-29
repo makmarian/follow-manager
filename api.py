@@ -36,10 +36,6 @@ cursor.execute('''
 ''')
 
 
-#cursor.execute('''
-#    INSERT INTO users (user_name, email) VALUES (?, ?)
-#''', ('John Doe', 'john.doe@example.com'))
-
 conn.commit()
 
 @app.route('/')
@@ -75,9 +71,12 @@ def platforms():
         cursor.execute('''INSERT INTO platforms (platform_name) VALUES (?)''', (name,))
         conn.commit()
 
-        # Make a check to see that it is actually added
-        if cursor.rowcount > 0:
-            return jsonify({'success': f'added-platform-{name}'}), 200
+        # Check if platform already exists
+        cursor.execute('''SELECT * FROM platforms WHERE platform_name = ?''', (name,))
+
+        platform = cursor.fetchone()
+        if platform:
+            return jsonify({'success': f'added-platform-{name}','data':platform}), 200
         else:
             return jsonify({'error': f'somethign-went-wrong-adding-platform'}), 400
 

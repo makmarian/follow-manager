@@ -11,14 +11,14 @@
 
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container">
-            <a class="navbar-brand" href="#">Follow Manager</a>
+            <a class="navbar-brand" href="http://127.0.0.1:5000/">Follow Manager</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
                 <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="#">Home</a>
+                <a class="nav-link active" aria-current="page" href="http://127.0.0.1:5000/platforms">Platforms</a>
                 </li>
             </ul>
             </div>
@@ -31,17 +31,14 @@
 
     <div class="list-group">
     <div id="alertDiv"></div>
+    <div id="platformList"></div>
     </div>
     <script>
 
-
     const alertDiv = document.getElementById('alertDiv')
-
-
+    const platformList = document.getElementById('platformList')
 
     const UserAction = async (ff) => {
-
-
         var elementToRemove = document.getElementById(ff);
         if (elementToRemove) {
             fetch('http://127.0.0.1:5001/platform/id/'+ff, {
@@ -84,14 +81,14 @@
         alertDiv.append(wrapper)
     }
 
-    const createList = (id, message) => {
+    const createList = (id, name) => {
         const wrapper = document.createElement('div')
         wrapper.innerHTML = [
-            `   <a id=${id} class="list-group-item d-flex justify-content-between align-items-center">${message}    <button onclick="UserAction('${id}')" class="btn btn-danger" type="submit">Delete</button>
+            `   <a id=${id} class="list-group-item d-flex justify-content-between align-items-center">${name}    <button onclick="UserAction('${id}')" class="btn btn-danger" type="submit">Delete</button>
 </a>`
         ].join('')
 
-        alertDiv.append(wrapper)
+        platformList.append(wrapper)
     }
 
 
@@ -113,8 +110,8 @@
             return response.json();
         })
         .then(data => {
-            for(ff of data.data){
-                createList(`${ff[0]}`,`${ff[1]}`);
+            for(platform of data.data){
+                createList(`${platform[0]}`,`${platform[1]}`);
             }
         })
         .catch(error => {

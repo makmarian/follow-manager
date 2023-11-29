@@ -11,14 +11,14 @@
 
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container">
-            <a class="navbar-brand" href="#">Follow Manager</a>
+            <a class="navbar-brand" href="http://127.0.0.1:5000/">Follow Manager</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
                 <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="#">Home</a>
+                <a class="nav-link active" aria-current="page" href="http://127.0.0.1:5000/platforms">Platforms</a>
                 </li>
             </ul>
             </div>
@@ -30,6 +30,7 @@
     <div class="container">
 
     <div id="alertDiv"></div>
+
     <script>
 
 
@@ -72,6 +73,7 @@
             .then(data => {
                 if (data.success) {
                     alert('Platform successfully added', 'success');
+                    addToPlatformSelect(data.data[0],data.data[1])
                 } else {
                     alert(`Error adding platform: ${data.message}`, 'danger');
                 }
@@ -104,60 +106,53 @@
         <option value="2">Jane Doe</option>
         <option value="3">Linus Torvalds</option>
     </select>
-    <select class="form-select" id="inputGroupSelect02">
-        <option selected>Select platform</option>
-        <option value="1">Pixelfed</option>
-        <option value="2">Twitter</option>
-        <option value="3">TikTok</option>
+
+    <select id="selectionDiv" class="form-select" id="inputGroupSelect02">
+        <option selected value="none">Select platform</option>
     </select>
     <input type="text" class="form-control" aria-label="Text input with dropdown button" placeholder="johndoe123">
     <button class="btn btn-success" type="button" id="button-addon2">Add</button>
     </div>
 
 
+    <script>
 
-    <div class="progress-stacked">
-        <div class="progress" role="progressbar" aria-label="Segment one" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100" style="width: 45%"><div class="progress-bar">Pixelfed</div></div>
+    const addToPlatformSelect = (id, name) => {
 
-        <div class="progress" role="progressbar" aria-label="Segment two" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100" style="width: 30%"><div class="progress-bar bg-success">Twitter</div></div>
+        const wrapper = document.createElement('option')
+        wrapper.innerHTML = [
+            `<option value="${id}">${name}</option>`
+        ].join('')
 
-        <div class="progress" role="progressbar" aria-label="Segment three" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: 25%"><div class="progress-bar bg-info">TikTok</div></div>
-    </div>
+        selectionDiv.append(wrapper)
+    }
 
+    fetch('http://127.0.0.1:5001/platforms', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(errorData => {
+                    throw new Error(errorData.error);
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            for(platform of data.data){
+                addToPlatformSelect(`${platform[0]}`,`${platform[1]}`);
+            }
+        })
+        .catch(error => {
+            alert(`Error platform: ${error.message}`, 'danger');
+        });
 
-    <div class="container text-center">
-    <br>
-    <div class="row">
-        <div class="col">
-        <div class="list-group">
-        <li class="list-group-item list-group-item-primary d-flex justify-content-between align-items-center">
-            Pixelfed<span class="badge bg-dark rounded-pill">3</span>
-        </li>
-        <li class="list-group-item d-flex justify-content-between align-items-center">Foo</li>
-        <li class="list-group-item d-flex justify-content-between align-items-center">Bar</li>
-        <li class="list-group-item d-flex justify-content-between align-items-center">Baz</li>
-    </div>
-        </div>
-        <div class="col">
-        <div class="list-group">
-        <li class="list-group-item list-group-item-success d-flex justify-content-between align-items-center">
-            Twitter<span class="badge bg-dark rounded-pill">2</span>
-        </li>
-        <li class="list-group-item d-flex justify-content-between align-items-center">John Smith</li>
-        <li class="list-group-item d-flex justify-content-between align-items-center">Jane Doe</li>
-    </div>
-        </div>
-        <div class="col">
-        <div class="list-group">
-        <li class="list-group-item list-group-item-info d-flex justify-content-between align-items-center">
-            TikTok<span class="badge bg-dark rounded-pill">2</span>
-        </li>
-        <li class="list-group-item d-flex justify-content-between align-items-center">Richard Stallman</li>
-        <li class="list-group-item d-flex justify-content-between align-items-center">Linus Torvalds</li>
-    </div>
-        </div>
-    </div>
-    </div>
+    </script>
+
 
     </div>
 </body>

@@ -4,7 +4,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def display_table():
-    return render_template('table.html')
+    return render_template('home.html')
 
 @app.route('/platforms')
 def platforms():
